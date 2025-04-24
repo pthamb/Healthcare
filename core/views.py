@@ -319,28 +319,25 @@ def get_doctors_for_patient(request, patient_id):
 
     
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated])  # Ensure the user is authenticated
+@permission_classes([IsAuthenticated])  
 def remove_doctor_from_patient(request, id):
-    """
-    Remove a doctor from a patient by dissociating the doctor from the patient-doctor mapping.
-    """
+    
     try:
-        # Check if the request method is DELETE
+        
         if request.method == 'DELETE':
-            # Retrieve the patient-doctor mapping by ID
+            
             mapping = PatientDoctorMapping.objects.filter(id=id).first()
 
             if not mapping:
                 return Response({"message": "Mapping not found."}, status=status.HTTP_404_NOT_FOUND)
 
-            # Check if the logged-in user is the one who created the mapping
+            
             if mapping.user != request.user:
                 return Response({"message": "You do not have permission to remove this doctor."}, status=status.HTTP_403_FORBIDDEN)
 
-            # Remove the doctor from the mapping (set the doctor field to None)
+            
             mapping.doctor = None
-            mapping.save()  # Save the updated mapping
-
+            mapping.save()  
             return Response({"message": "Doctor removed from patient successfully."}, status=status.HTTP_200_OK)
 
     except Exception as e:
